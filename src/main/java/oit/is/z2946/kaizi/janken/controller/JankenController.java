@@ -1,25 +1,30 @@
 package oit.is.z2946.kaizi.janken.controller;
 
+import java.security.Principal;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model; // Modelをインポート
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import oit.is.z2946.kaizi.janken.model.Entry;
 
 @Controller
 public class JankenController {
 
+  @Autowired
+  private Entry entry;
+
   @GetMapping("/janken")
-  public String jankenPage() {
+  public String jankenPage(Principal prin, ModelMap model) {
+    String loginUser = prin.getName();
+    this.entry.addUser(loginUser);
+    model.addAttribute("username", loginUser);
+    model.addAttribute("allUsers", this.entry.getUsers());
     return "janken.html";
   }
 
-  @PostMapping("/janken/login")
-  public String login(@RequestParam("username") String userName, RedirectAttributes redirectAttributes) {
-    redirectAttributes.addFlashAttribute("username", userName);
-    return "redirect:/janken";
-  }
 
   /**
    * じゃんけんの対戦処理を行う
