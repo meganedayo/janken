@@ -9,20 +9,12 @@
 <body>
   <a href="/logout">ログアウト</a>
 
-
-
   <h1>Janken Game!</h1>
-
-
 
   <p>エントリー</p>
   <ul>
-    <li th:each="user : ${allUsers}" th:text="${user}"></li>
+    <li th:each="user : ${users}" th:text="${user.name}"></li>
   </ul>
-
-    <div th:if="${username != null and !username.isEmpty()}">
-      <p th:text="'Hi ' + ${username}"></p>
-    </div>
 
   <h2>手を選んでください</h2>
   <p>

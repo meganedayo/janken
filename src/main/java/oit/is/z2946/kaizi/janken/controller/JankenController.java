@@ -1,6 +1,7 @@
 package oit.is.z2946.kaizi.janken.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import oit.is.z2946.kaizi.janken.model.Entry;
+import oit.is.z2946.kaizi.janken.model.UserMapper;
+import oit.is.z2946.kaizi.janken.model.User;
 
 @Controller
 public class JankenController {
@@ -16,12 +19,17 @@ public class JankenController {
   @Autowired
   private Entry entry;
 
+  @Autowired
+  UserMapper userMapper;
+
   @GetMapping("/janken")
   public String jankenPage(Principal prin, ModelMap model) {
     String loginUser = prin.getName();
     this.entry.addUser(loginUser);
     model.addAttribute("username", loginUser);
     model.addAttribute("allUsers", this.entry.getUsers());
+    ArrayList<User> users = this.userMapper.selectAllUsers();
+    model.addAttribute("users", users);
     return "janken.html";
   }
 
