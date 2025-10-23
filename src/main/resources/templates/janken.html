@@ -16,6 +16,28 @@
     <li th:each="user : ${users}" th:text="${user.name}"></li>
   </ul>
 
+  <h2>試合結果</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User1</th>
+        <th>User2</th>
+        <th>User1 Hand</th>
+        <th>User2 Hand</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="match : ${matches}">
+        <td th:text="${match.id}"></td>
+        <td th:text="${match.user1}"></td>
+        <td th:text="${match.user2}"></td>
+        <td th:text="${match.user1Hand}"></td>
+        <td th:text="${match.user2Hand}"></td>
+      </tr>
+    </tbody>
+  </table>
+
   <h2>手を選んでください</h2>
   <p>
     <a href="/janken/play?myhand=グー">グー</a> |

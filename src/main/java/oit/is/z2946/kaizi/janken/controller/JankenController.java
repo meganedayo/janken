@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import oit.is.z2946.kaizi.janken.model.Entry;
 import oit.is.z2946.kaizi.janken.model.UserMapper;
 import oit.is.z2946.kaizi.janken.model.User;
+import oit.is.z2946.kaizi.janken.model.MatchMapper;
+import oit.is.z2946.kaizi.janken.model.Match;
 
 @Controller
 public class JankenController {
@@ -22,6 +24,9 @@ public class JankenController {
   @Autowired
   UserMapper userMapper;
 
+  @Autowired
+  MatchMapper matchMapper;
+
   @GetMapping("/janken")
   public String jankenPage(Principal prin, ModelMap model) {
     String loginUser = prin.getName();
@@ -30,6 +35,8 @@ public class JankenController {
     model.addAttribute("allUsers", this.entry.getUsers());
     ArrayList<User> users = this.userMapper.selectAllUsers();
     model.addAttribute("users", users);
+    ArrayList<Match> matches = matchMapper.selectAllMatches();
+    model.addAttribute("matches", matches);
     return "janken.html";
   }
 
