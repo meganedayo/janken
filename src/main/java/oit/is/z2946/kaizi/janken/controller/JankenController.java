@@ -10,6 +10,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import oit.is.z2946.kaizi.janken.model.Entry;
+import oit.is.z2946.kaizi.janken.model.Janken;
 import oit.is.z2946.kaizi.janken.model.UserMapper;
 import oit.is.z2946.kaizi.janken.model.User;
 import oit.is.z2946.kaizi.janken.model.MatchMapper;
@@ -40,37 +41,48 @@ public class JankenController {
     return "janken.html";
   }
 
+  @GetMapping("/match")
+  public String match(@RequestParam int id, Principal prin, ModelMap model) {
+    // ログインユーザの情報を取得
+    String loginUserName = prin.getName();
+    // 対戦相手のユーザ情報をIDで取得
+    User opponent = userMapper.selectById(id);
 
-  /**
-   * じゃんけんの対戦処理を行う
-   *
-   * @param myHand プレイヤーが選んだ手
-   * @param model  テンプレートに渡すデータを格納するオブジェクト
-   * @return janken.htmlのテンプレート名
-   */
-  @GetMapping("/janken/play")
-  public String play(@RequestParam("myhand") String myHand, Model model) {
-    // CPUの手を「グー」に固定
-    String cpuHand = "グー";
+    // Modelにテンプレートへ渡す情報を追加
+    model.addAttribute("loginUserName", loginUserName);
+    model.addAttribute("opponent", opponent);
 
-    // 勝敗判定
-    String result;
-    if (myHand.equals(cpuHand)) {
-      result = "あいこ";
-    } else if ((myHand.equals("グー") && cpuHand.equals("チョキ")) ||
-        (myHand.equals("チョキ") && cpuHand.equals("パー")) ||
-        (myHand.equals("パー") && cpuHand.equals("グー"))) {
-      result = "あなたの勝ち！";
-    } else {
-      result = "あなたの負け...";
-    }
-
-    // テンプレートに渡すデータをModelオブジェクトに追加
-    model.addAttribute("myHand", myHand);
-    model.addAttribute("cpuHand", cpuHand);
-    model.addAttribute("result", result);
-
-    // janken.html を表示
-    return "janken";
+    return "match.html";
   }
+
+  @GetMapping("/fight")
+  public String fight(@RequestParam int opponentId, @RequestParam String myHand, Principal prin, ModelMap model) {
+    // 1. 自分のユーザ情報をDBから取得 (ID取得のため)
+    String loginUserName = prin.getName();
+    User myUser = userMapper.selectByName(loginUserName);
+
+    // 2. 対戦相手のユーザ情報をIDで取得
+    User opponent = userMapper.selectById(opponentId);
+
+    // 3. じゃんけんロジックを実行
+    Janken janken = new Janken(myHand);
+
+    // 4. Matchオブジェクトを作成してDBにINSERT
+    Match match = new Match();
+    match.setUser1(myUser.getId());
+    match.setUser2(opponent.getId());
+    match.setUser1Hand(myHand); // user1(自分)の手
+    match.setUser2Hand(janken.getCpuHand()); // user2(相手)の手
+    matchMapper.insertMatch(match);
+
+    // 5. Modelに結果を詰めて画面遷移
+    model.addAttribute("loginUserName", loginUserName);
+    model.addAttribute("opponent", opponent);
+    model.addAttribute("myHand", myHand);
+    model.addAttribute("cpuHand", janken.getCpuHand());
+    model.addAttribute("result", janken.getresult());
+
+    return "match.html";
+  }
+
 }
