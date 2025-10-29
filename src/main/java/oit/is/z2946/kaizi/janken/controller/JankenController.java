@@ -43,6 +43,9 @@ public class JankenController {
     model.addAttribute("users", users);
     ArrayList<Match> matches = matchMapper.selectAllMatches();
     model.addAttribute("matches", matches);
+    ArrayList<MatchInfo> activeMatches = matchInfoMapper.selectActiveMatches();
+    model.addAttribute("activeMatches", activeMatches);
+
     return "janken.html";
   }
 
@@ -100,8 +103,8 @@ public class JankenController {
     MatchInfo matchInfo = new MatchInfo();
     matchInfo.setUser1(myUser.getId());
     matchInfo.setUser2(opponentId); // 対戦相手のID
-    matchInfo.setUser1Hand(myHand);   // 自分が選んだ手
-    matchInfo.setIsActive(true);      // 試合がアクティブであることを示す
+    matchInfo.setUser1Hand(myHand); // 自分が選んだ手
+    matchInfo.setIsActive(true); // 試合がアクティブであることを示す
 
     // 3. DBにINSERT
     matchInfoMapper.insertMatchInfo(matchInfo);
